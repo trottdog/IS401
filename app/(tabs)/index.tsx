@@ -36,6 +36,7 @@ export default function DiscoverScreen() {
   const topInset = Platform.OS === "web" ? 67 : insets.top;
 
   const loadData = useCallback(async () => {
+    await store.initializeStore();
     const [e, c, b, cats] = await Promise.all([
       store.getEvents(),
       store.getClubs(),
