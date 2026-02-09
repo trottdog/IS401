@@ -1,21 +1,26 @@
-// template
 import { isLiquidGlassAvailable } from "expo-glass-effect";
 import { Tabs } from "expo-router";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 import { BlurView } from "expo-blur";
-import { SymbolView } from "expo-symbols";
-import { Platform, StyleSheet, useColorScheme } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Platform, StyleSheet, useColorScheme, View } from "react-native";
 import React from "react";
-
 import Colors from "@/constants/colors";
 
-//IMPORTANT: iOS 26 Exists, feel free to use NativeTabs for native tabs with liquid glass support.
 function NativeTabLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "house", selected: "house.fill" }} />
-        <Label>Home</Label>
+        <Icon sf={{ default: "map", selected: "map.fill" }} md="map" />
+        <Label>Discover</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="my-clubs">
+        <Icon sf={{ default: "person.2", selected: "person.2.fill" }} md="groups" />
+        <Label>My Clubs</Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="profile">
+        <Icon sf={{ default: "person.circle", selected: "person.circle.fill" }} md="person" />
+        <Label>Profile</Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );
@@ -24,38 +29,63 @@ function NativeTabLayout() {
 function ClassicTabLayout() {
   const colorScheme = useColorScheme();
   const isDark = colorScheme === "dark";
+  const isWeb = Platform.OS === "web";
+  const isIOS = Platform.OS === "ios";
 
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors.light.tint,
         tabBarInactiveTintColor: Colors.light.tabIconDefault,
-        headerShown: true,
+        headerShown: false,
         tabBarStyle: {
-          position: "absolute",
-          backgroundColor: Platform.select({
-            ios: "transparent",
-            android: isDark ? "#000" : "#fff",
-          }),
-          borderTopWidth: 0,
+          position: "absolute" as const,
+          backgroundColor: isIOS ? "transparent" : isDark ? "#000" : "#fff",
+          borderTopWidth: isWeb ? 1 : 0,
+          borderTopColor: Colors.light.borderLight,
           elevation: 0,
+          ...(isWeb ? { height: 84 } : {}),
         },
         tabBarBackground: () =>
-          Platform.OS === "ios" ? (
+          isIOS ? (
             <BlurView
               intensity={100}
               tint={isDark ? "dark" : "light"}
               style={StyleSheet.absoluteFill}
             />
+          ) : isWeb ? (
+            <View style={[StyleSheet.absoluteFill, { backgroundColor: "#fff" }]} />
           ) : null,
+        tabBarLabelStyle: {
+          fontFamily: "Inter_500Medium",
+          fontSize: 11,
+        },
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Home",
-          tabBarIcon: ({ color }) => (
-            <SymbolView name="house" tintColor={color} size={24} />
+          title: "Discover",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "map" : "map-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="my-clubs"
+        options={{
+          title: "My Clubs",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "people" : "people-outline"} size={24} color={color} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          title: "Profile",
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? "person-circle" : "person-circle-outline"} size={24} color={color} />
           ),
         }}
       />
