@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useRef, useMemo } from "react";
-import { View, Text, FlatList, Pressable, StyleSheet, ActivityIndicator, Platform, RefreshControl } from "react-native";
+import React, { useState, useCallback, useMemo } from "react";
+import { View, Text, FlatList, Pressable, StyleSheet, ActivityIndicator, Platform, RefreshControl, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useFocusEffect } from "expo-router";
 import Colors from "@/constants/colors";
 import { useAuth } from "@/lib/auth-context";
-import { Event, Club, Building, Category, EventSave } from "@/lib/types";
+import { Event, Club, Building, Category, EventSave, getTimeLabel, getTimeLabelColor, formatEventTime, formatEventDate } from "@/lib/types";
 import * as store from "@/lib/store";
 import { EventCard } from "@/components/EventCard";
 import { SegmentedControl } from "@/components/SegmentedControl";
@@ -175,29 +175,74 @@ export default function DiscoverScreen() {
             <View style={styles.bottomSheet}>
               <View style={styles.sheetHandle} />
               <View style={styles.sheetHeader}>
-                <Text style={styles.sheetTitle}>
-                  {getBuilding(selectedBuilding)?.name}
-                </Text>
+                <View style={styles.sheetHeaderLeft}>
+                  <Ionicons name="location" size={18} color={Colors.light.tint} />
+                  <Text style={styles.sheetTitle}>
+                    {getBuilding(selectedBuilding)?.name}
+                  </Text>
+                </View>
                 <Pressable onPress={() => setShowBuildingSheet(false)} hitSlop={12}>
-                  <Ionicons name="close" size={22} color={Colors.light.textSecondary} />
+                  <Ionicons name="close-circle" size={26} color={Colors.light.textTertiary} />
                 </Pressable>
               </View>
-              <FlatList
-                data={buildingEvents}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                  <EventCard
-                    event={item}
-                    club={getClub(item.clubId)}
-                    building={getBuilding(item.buildingId)}
-                    compact
-                  />
+              <Text style={styles.sheetSubtitle}>
+                {buildingEvents.length} upcoming event{buildingEvents.length !== 1 ? "s" : ""}
+              </Text>
+              <ScrollView style={styles.sheetList} showsVerticalScrollIndicator={false}>
+                {buildingEvents.length === 0 ? (
+                  <Text style={styles.sheetEmpty}>No upcoming events at this location</Text>
+                ) : (
+                  buildingEvents.map((evt) => {
+                    const club = getClub(evt.clubId);
+                    const label = getTimeLabel(evt.startTime, evt.endTime);
+                    const labelColor = getTimeLabelColor(label);
+                    return (
+                      <Pressable
+                        key={evt.id}
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                          router.push({ pathname: "/event/[id]", params: { id: evt.id } });
+                        }}
+                        style={({ pressed }) => [styles.previewCard, { opacity: pressed ? 0.85 : 1 }]}
+                      >
+                        <View style={styles.previewTop}>
+                          <View style={[styles.previewBadge, { backgroundColor: labelColor + "18" }]}>
+                            <Text style={[styles.previewBadgeText, { color: labelColor }]}>{label}</Text>
+                          </View>
+                          {evt.hasFood && (
+                            <MaterialIcons name="restaurant" size={14} color={Colors.light.warning} />
+                          )}
+                          <View style={styles.previewArrow}>
+                            <Ionicons name="chevron-forward" size={16} color={Colors.light.textTertiary} />
+                          </View>
+                        </View>
+                        <Text style={styles.previewTitle} numberOfLines={2}>{evt.title}</Text>
+                        <Text style={styles.previewDesc} numberOfLines={2}>{evt.description}</Text>
+                        <View style={styles.previewMeta}>
+                          <View style={styles.previewMetaItem}>
+                            <Ionicons name="time-outline" size={13} color={Colors.light.textSecondary} />
+                            <Text style={styles.previewMetaText}>
+                              {formatEventTime(evt.startTime)} · {formatEventDate(evt.startTime)}
+                            </Text>
+                          </View>
+                          <View style={styles.previewMetaItem}>
+                            <Ionicons name="navigate-outline" size={13} color={Colors.light.textSecondary} />
+                            <Text style={styles.previewMetaText}>
+                              Room {evt.room}
+                            </Text>
+                          </View>
+                        </View>
+                        {club && (
+                          <View style={styles.previewClub}>
+                            <View style={[styles.previewClubDot, { backgroundColor: club.imageColor }]} />
+                            <Text style={styles.previewClubName}>{club.name}</Text>
+                          </View>
+                        )}
+                      </Pressable>
+                    );
+                  })
                 )}
-                style={styles.sheetList}
-                ListEmptyComponent={
-                  <Text style={styles.sheetEmpty}>No upcoming events</Text>
-                }
-              />
+              </ScrollView>
             </View>
           )}
         </View>
@@ -257,26 +302,26 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     color: Colors.light.textTertiary,
   },
-  mapContainer: { flex: 1, marginTop: 12 },
+  mapContainer: { flex: 1, marginTop: 8 },
   bottomSheet: {
     position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: Colors.light.surface,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: 350,
+    borderTopLeftRadius: 22,
+    borderTopRightRadius: 22,
+    maxHeight: 380,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
+    shadowOpacity: 0.12,
+    shadowRadius: 16,
+    elevation: 10,
   },
   sheetHandle: {
-    width: 40,
+    width: 36,
     height: 4,
-    backgroundColor: Colors.light.borderLight,
+    backgroundColor: Colors.light.border,
     borderRadius: 2,
     alignSelf: "center",
     marginTop: 10,
@@ -286,21 +331,107 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingTop: 12,
+    paddingBottom: 2,
+  },
+  sheetHeaderLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    flex: 1,
   },
   sheetTitle: {
     fontSize: 17,
-    fontFamily: "Inter_600SemiBold",
+    fontFamily: "Inter_700Bold",
     color: Colors.light.text,
     flex: 1,
   },
-  sheetList: { paddingBottom: 20 },
+  sheetSubtitle: {
+    fontSize: 13,
+    fontFamily: "Inter_500Medium",
+    color: Colors.light.textSecondary,
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+    paddingTop: 2,
+  },
+  sheetList: { paddingBottom: 24, paddingHorizontal: 16 },
   sheetEmpty: {
     fontSize: 14,
     fontFamily: "Inter_400Regular",
     color: Colors.light.textSecondary,
     textAlign: "center",
     padding: 20,
+  },
+  previewCard: {
+    backgroundColor: Colors.light.background,
+    borderRadius: 14,
+    padding: 14,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: Colors.light.borderLight,
+  },
+  previewTop: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 8,
+  },
+  previewBadge: {
+    paddingHorizontal: 9,
+    paddingVertical: 3,
+    borderRadius: 20,
+  },
+  previewBadgeText: {
+    fontSize: 11,
+    fontFamily: "Inter_600SemiBold",
+  },
+  previewArrow: {
+    marginLeft: "auto" as const,
+  },
+  previewTitle: {
+    fontSize: 16,
+    fontFamily: "Inter_600SemiBold",
+    color: Colors.light.text,
+    lineHeight: 21,
+    marginBottom: 4,
+  },
+  previewDesc: {
+    fontSize: 13,
+    fontFamily: "Inter_400Regular",
+    color: Colors.light.textSecondary,
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  previewMeta: {
+    flexDirection: "row",
+    gap: 14,
+    marginBottom: 6,
+  },
+  previewMetaItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+  },
+  previewMetaText: {
+    fontSize: 12,
+    fontFamily: "Inter_400Regular",
+    color: Colors.light.textSecondary,
+  },
+  previewClub: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    marginTop: 4,
+  },
+  previewClubDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+  },
+  previewClubName: {
+    fontSize: 12,
+    fontFamily: "Inter_500Medium",
+    color: Colors.light.textSecondary,
   },
   list: {
     paddingTop: 16,
