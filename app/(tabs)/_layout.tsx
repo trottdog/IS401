@@ -1,5 +1,5 @@
 import { isLiquidGlassAvailable } from "expo-glass-effect";
-import { Tabs } from "expo-router";
+import { Tabs, router } from "expo-router";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 import { BlurView } from "expo-blur";
 import { Ionicons } from "@expo/vector-icons";
@@ -69,6 +69,12 @@ function ClassicTabLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? "map" : "map-outline"} size={24} color={color} />
           ),
+        }}
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault();
+            router.replace("/(tabs)/(home)");
+          },
         }}
       />
       <Tabs.Screen
