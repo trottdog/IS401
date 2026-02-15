@@ -23,12 +23,12 @@ Preferred communication style: Simple, everyday language.
 ### Route Structure
 
 The app uses Expo Router's file-based routing:
-- `app/(tabs)/` — Main tab navigation with 3 tabs: Discover (map + event list), My Clubs, Profile
+- `app/(tabs)/` — Main tab navigation with 3 tabs: Discover, My Clubs, Profile
+  - `app/(tabs)/(home)/` — Discover tab stack: index (map + event list), event/[id], club/[id], search
+  - `app/(tabs)/(clubs)/` — My Clubs tab stack: index
+  - `app/(tabs)/(profile)/` — Profile tab stack: index, notifications
 - `app/(auth)/` — Modal auth flow with login and register screens
-- `app/event/[id]` — Event detail screen
-- `app/club/[id]` — Club profile screen
-- `app/search` — Global search across events, clubs, buildings
-- `app/notifications` — User notifications
+- Detail screens (event, club, search, notifications) are nested inside tab groups so the tab bar remains visible
 
 ### Data Layer (Current State)
 
