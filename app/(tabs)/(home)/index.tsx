@@ -149,7 +149,7 @@ export default function DiscoverScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Discover</Text>
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/search"); }}
+          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/(tabs)/(home)/search"); }}
           style={styles.searchBtn}
         >
           <Ionicons name="search" size={20} color={Colors.light.textSecondary} />
@@ -201,7 +201,7 @@ export default function DiscoverScreen() {
                         key={evt.id}
                         onPress={() => {
                           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                          router.push({ pathname: "/event/[id]", params: { id: evt.id } });
+                          router.push({ pathname: "/(tabs)/(home)/event/[id]", params: { id: evt.id } });
                         }}
                         style={({ pressed }) => [styles.previewCard, { opacity: pressed ? 0.85 : 1 }]}
                       >

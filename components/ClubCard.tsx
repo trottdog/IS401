@@ -17,7 +17,7 @@ interface ClubCardProps {
 export function ClubCard({ club, category, isMember, role, compact }: ClubCardProps) {
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push({ pathname: "/club/[id]", params: { id: club.id } });
+    router.push({ pathname: "/(tabs)/(home)/club/[id]", params: { id: club.id } });
   };
 
   if (compact) {

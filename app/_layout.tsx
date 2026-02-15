@@ -23,30 +23,6 @@ function RootLayoutNav() {
           headerShown: false,
         }}
       />
-      <Stack.Screen
-        name="event/[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="club/[id]"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="search"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="notifications"
-        options={{
-          headerShown: false,
-        }}
-      />
     </Stack>
   );
 }

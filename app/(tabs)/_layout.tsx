@@ -10,15 +10,15 @@ import Colors from "@/constants/colors";
 function NativeTabLayout() {
   return (
     <NativeTabs>
-      <NativeTabs.Trigger name="index">
+      <NativeTabs.Trigger name="(home)">
         <Icon sf={{ default: "map", selected: "map.fill" }} md="map" />
         <Label>Discover</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="my-clubs">
+      <NativeTabs.Trigger name="(clubs)">
         <Icon sf={{ default: "person.2", selected: "person.2.fill" }} md="groups" />
         <Label>My Clubs</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
+      <NativeTabs.Trigger name="(profile)">
         <Icon sf={{ default: "person.circle", selected: "person.circle.fill" }} md="person" />
         <Label>Profile</Label>
       </NativeTabs.Trigger>
@@ -63,7 +63,7 @@ function ClassicTabLayout() {
       }}
     >
       <Tabs.Screen
-        name="index"
+        name="(home)"
         options={{
           title: "Discover",
           tabBarIcon: ({ color, focused }) => (
@@ -72,7 +72,7 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="my-clubs"
+        name="(clubs)"
         options={{
           title: "My Clubs",
           tabBarIcon: ({ color, focused }) => (
@@ -81,7 +81,7 @@ function ClassicTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="(profile)"
         options={{
           title: "Profile",
           tabBarIcon: ({ color, focused }) => (

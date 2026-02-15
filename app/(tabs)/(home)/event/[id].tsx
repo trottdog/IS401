@@ -125,7 +125,7 @@ export default function EventDetailScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.topBar, { paddingTop: topInset + 8 }]}>
-        <Pressable onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace("/(tabs)"); } }} style={styles.backBtn} hitSlop={12}>
+        <Pressable onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace("/(tabs)/(home)"); } }} style={styles.backBtn} hitSlop={12}>
           <Ionicons name="chevron-back" size={24} color={Colors.light.text} />
         </Pressable>
         <View style={styles.topBarActions}>
@@ -177,7 +177,7 @@ export default function EventDetailScreen() {
 
         {club && (
           <Pressable
-            onPress={() => router.push({ pathname: "/club/[id]", params: { id: club.id } })}
+            onPress={() => router.push({ pathname: "/(tabs)/(home)/club/[id]", params: { id: club.id } })}
             style={styles.clubRow}
           >
             <View style={[styles.clubDot, { backgroundColor: club.imageColor }]} />

@@ -99,7 +99,7 @@ export default function ClubProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.topBar, { paddingTop: topInset + 8 }]}>
-        <Pressable onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace("/(tabs)"); } }} style={styles.backBtn} hitSlop={12}>
+        <Pressable onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace("/(tabs)/(home)"); } }} style={styles.backBtn} hitSlop={12}>
           <Ionicons name="chevron-back" size={24} color={Colors.light.text} />
         </Pressable>
         {isAdmin && (

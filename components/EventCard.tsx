@@ -22,7 +22,7 @@ export function EventCard({ event, club, building, category, isSaved, onSave, co
 
   const handlePress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push({ pathname: "/event/[id]", params: { id: event.id } });
+    router.push({ pathname: "/(tabs)/(home)/event/[id]", params: { id: event.id } });
   };
 
   const handleSave = () => {

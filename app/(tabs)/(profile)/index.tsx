@@ -95,7 +95,7 @@ export default function ProfileScreen() {
           <Text style={styles.headerTitle}>Profile</Text>
         </View>
         <View style={styles.headerActions}>
-          <Pressable onPress={() => router.push("/notifications")} hitSlop={10}>
+          <Pressable onPress={() => router.push("/(tabs)/(profile)/notifications")} hitSlop={10}>
             <Ionicons name="notifications-outline" size={24} color={Colors.light.text} />
           </Pressable>
         </View>
