@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, Alert, ActivityIndicator, Platform, Share } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet, Alert, ActivityIndicator, Platform, Share, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -8,6 +8,7 @@ import { useAuth } from "@/lib/auth-context";
 import { Event, Club, Building, Category, EventSave, Reservation, getTimeLabel, getTimeLabelColor, formatEventTime, formatEventDate } from "@/lib/types";
 import * as store from "@/lib/store";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 
 export default function EventDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -79,19 +80,28 @@ export default function EventDetailScreen() {
   const handleReserve = async () => {
     if (!user) { router.push("/(auth)/login"); return; }
     if (isReserved) {
-      Alert.alert("Cancel Reservation", "Are you sure you want to cancel?", [
-        { text: "Keep", style: "cancel" },
-        {
-          text: "Cancel",
-          style: "destructive",
-          onPress: async () => {
-            await store.cancelReservation(user.id, event.id);
-            setIsReserved(false);
-            setEvent(prev => prev ? { ...prev, currentReservations: prev.currentReservations - 1 } : prev);
-            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (Platform.OS === "web") {
+        if (window.confirm("Cancel your reservation?")) {
+          await store.cancelReservation(user.id, event.id);
+          setIsReserved(false);
+          setEvent(prev => prev ? { ...prev, currentReservations: prev.currentReservations - 1 } : prev);
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        }
+      } else {
+        Alert.alert("Cancel Reservation", "Are you sure you want to cancel?", [
+          { text: "Keep", style: "cancel" },
+          {
+            text: "Cancel",
+            style: "destructive",
+            onPress: async () => {
+              await store.cancelReservation(user.id, event.id);
+              setIsReserved(false);
+              setEvent(prev => prev ? { ...prev, currentReservations: prev.currentReservations - 1 } : prev);
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            },
           },
-        },
-      ]);
+        ]);
+      }
       return;
     }
     if (isFull) {
@@ -115,7 +125,7 @@ export default function EventDetailScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.topBar, { paddingTop: topInset + 8 }]}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn} hitSlop={12}>
+        <Pressable onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace("/(tabs)"); } }} style={styles.backBtn} hitSlop={12}>
           <Ionicons name="chevron-back" size={24} color={Colors.light.text} />
         </Pressable>
         <View style={styles.topBarActions}>
@@ -132,6 +142,33 @@ export default function EventDetailScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingTop: topInset + 60 }]}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.coverContainer}>
+          {event.coverImage ? (
+            <Image source={{ uri: event.coverImage }} style={styles.coverImage} resizeMode="cover" />
+          ) : (
+            <View style={styles.coverPlaceholder}>
+              <Ionicons name="image-outline" size={32} color={Colors.light.textTertiary} />
+            </View>
+          )}
+          <Pressable
+            onPress={async () => {
+              const result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [16, 9],
+                quality: 0.8,
+              });
+              if (!result.canceled && result.assets[0]) {
+                await store.updateEventCoverImage(event.id, result.assets[0].uri);
+                setEvent(prev => prev ? { ...prev, coverImage: result.assets[0].uri } : prev);
+              }
+            }}
+            style={styles.editCoverBtn}
+          >
+            <Ionicons name="camera-outline" size={16} color="#fff" />
+          </Pressable>
+        </View>
+
         <View style={[styles.timeBadge, { backgroundColor: timeLabelColor + "18" }]}>
           <Text style={[styles.timeBadgeText, { color: timeLabelColor }]}>{timeLabel}</Text>
         </View>
@@ -490,5 +527,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Inter_500Medium",
     color: Colors.light.success,
+  },
+  coverContainer: {
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: "hidden" as const,
+    position: "relative" as const,
+  },
+  coverImage: {
+    width: "100%" as const,
+    height: 200,
+    borderRadius: 16,
+  },
+  coverPlaceholder: {
+    width: "100%" as const,
+    height: 160,
+    backgroundColor: Colors.light.surfaceSecondary,
+    borderRadius: 16,
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+  },
+  editCoverBtn: {
+    position: "absolute" as const,
+    bottom: 10,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
   },
 });

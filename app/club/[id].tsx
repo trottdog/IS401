@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, Alert, ActivityIndicator, Platform, FlatList } from "react-native";
+import { View, Text, ScrollView, Pressable, StyleSheet, Alert, ActivityIndicator, Platform, FlatList, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router, useLocalSearchParams } from "expo-router";
@@ -10,6 +10,7 @@ import * as store from "@/lib/store";
 import { EventCard } from "@/components/EventCard";
 import { SegmentedControl } from "@/components/SegmentedControl";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 
 export default function ClubProfileScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -98,7 +99,7 @@ export default function ClubProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.topBar, { paddingTop: topInset + 8 }]}>
-        <Pressable onPress={() => router.back()} style={styles.backBtn} hitSlop={12}>
+        <Pressable onPress={() => { if (router.canGoBack()) { router.back(); } else { router.replace("/(tabs)"); } }} style={styles.backBtn} hitSlop={12}>
           <Ionicons name="chevron-back" size={24} color={Colors.light.text} />
         </Pressable>
         {isAdmin && (
@@ -114,6 +115,32 @@ export default function ClubProfileScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.clubHeader}>
+          <View style={styles.coverContainer}>
+            {club.coverImage ? (
+              <Image source={{ uri: club.coverImage }} style={styles.coverImage} resizeMode="cover" />
+            ) : (
+              <View style={styles.coverPlaceholder}>
+                <Ionicons name="image-outline" size={32} color={Colors.light.textTertiary} />
+              </View>
+            )}
+            <Pressable
+              onPress={async () => {
+                const result = await ImagePicker.launchImageLibraryAsync({
+                  mediaTypes: ['images'],
+                  allowsEditing: true,
+                  aspect: [16, 9],
+                  quality: 0.8,
+                });
+                if (!result.canceled && result.assets[0]) {
+                  await store.updateClubCoverImage(club.id, result.assets[0].uri);
+                  setClub(prev => prev ? { ...prev, coverImage: result.assets[0].uri } : prev);
+                }
+              }}
+              style={styles.editCoverBtn}
+            >
+              <Ionicons name="camera-outline" size={16} color="#fff" />
+            </Pressable>
+          </View>
           <View style={[styles.avatar, { backgroundColor: club.imageColor }]}>
             <Text style={styles.avatarText}>{club.name.charAt(0)}</Text>
           </View>
@@ -414,5 +441,36 @@ const styles = StyleSheet.create({
     fontFamily: "Inter_400Regular",
     color: Colors.light.text,
     flex: 1,
+  },
+  coverContainer: {
+    width: "100%" as const,
+    marginBottom: 16,
+    borderRadius: 16,
+    overflow: "hidden" as const,
+    position: "relative" as const,
+  },
+  coverImage: {
+    width: "100%" as const,
+    height: 180,
+    borderRadius: 16,
+  },
+  coverPlaceholder: {
+    width: "100%" as const,
+    height: 140,
+    backgroundColor: Colors.light.surfaceSecondary,
+    borderRadius: 16,
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
+  },
+  editCoverBtn: {
+    position: "absolute" as const,
+    bottom: 10,
+    right: 10,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center" as const,
+    alignItems: "center" as const,
   },
 });

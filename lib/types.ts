@@ -31,6 +31,7 @@ export interface Club {
   contactEmail: string;
   website: string;
   instagram: string;
+  coverImage?: string;
 }
 
 export interface ClubMembership {
@@ -58,6 +59,7 @@ export interface Event {
   foodDescription: string | null;
   tags: string[];
   isCancelled: boolean;
+  coverImage?: string;
 }
 
 export interface EventSave {

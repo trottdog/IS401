@@ -273,3 +273,21 @@ export async function createEvent(event: Omit<Event, "id" | "currentReservations
   await setJson(KEYS.EVENTS, events);
   return newEvent;
 }
+
+export async function updateEventCoverImage(eventId: string, imageUri: string): Promise<void> {
+  const events = await getEvents();
+  const event = events.find(e => e.id === eventId);
+  if (event) {
+    event.coverImage = imageUri;
+    await setJson(KEYS.EVENTS, events);
+  }
+}
+
+export async function updateClubCoverImage(clubId: string, imageUri: string): Promise<void> {
+  const clubs = await getClubs();
+  const club = clubs.find(c => c.id === clubId);
+  if (club) {
+    club.coverImage = imageUri;
+    await setJson(KEYS.CLUBS, clubs);
+  }
+}
