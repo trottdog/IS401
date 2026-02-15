@@ -147,7 +147,16 @@ export default function DiscoverScreen() {
   return (
     <View style={[styles.container, { paddingTop: topInset }]}>
       <View style={styles.header}>
-        <Text style={styles.headerTitle}>Discover</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.headerTitle}>Discover</Text>
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/(tabs)/(home)/create-event"); }}
+            style={styles.createBtn}
+            hitSlop={8}
+          >
+            <Ionicons name="add" size={24} color="#fff" />
+          </Pressable>
+        </View>
         <Pressable
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/(tabs)/(home)/search"); }}
           style={styles.searchBtn}
@@ -283,10 +292,23 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     gap: 12,
   },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
   headerTitle: {
     fontSize: 28,
     fontFamily: "Inter_700Bold",
     color: Colors.light.text,
+  },
+  createBtn: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: Colors.light.tint,
+    justifyContent: "center",
+    alignItems: "center",
   },
   searchBtn: {
     flexDirection: "row",
