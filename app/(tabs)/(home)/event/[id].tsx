@@ -274,10 +274,10 @@ export default function EventDetailScreen() {
           </View>
         )}
 
-        <View style={{ height: 120 }} />
+        <View style={{ height: Platform.OS === "web" ? 200 : 170 }} />
       </ScrollView>
 
-      <View style={[styles.bottomBar, { paddingBottom: bottomInset + 12 }]}>
+      <View style={[styles.bottomBar, { bottom: Platform.OS === "web" ? 84 : 49 + bottomInset, paddingBottom: 12 }]}>
         {event.hasLimitedCapacity ? (
           <Pressable
             onPress={handleReserve}
