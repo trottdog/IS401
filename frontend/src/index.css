@@ -1,0 +1,97 @@
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #1a1a1a;
+  color: #1A1A2E;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px 0;
+  -webkit-font-smoothing: antialiased;
+}
+#root {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+/* Phone content area: centered, consistent spacing */
+.app-phone main {
+  --page-padding-x: 20px;
+  --page-padding-y: 16px;
+  --touch-min: 44px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  padding-left: var(--page-padding-x);
+  padding-right: var(--page-padding-x);
+  padding-top: var(--page-padding-y);
+  padding-bottom: calc(var(--page-padding-y) + 60px);
+  /* No visible scrollbar strip on the side */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.app-phone main::-webkit-scrollbar {
+  display: none;
+}
+.app-phone .page-content {
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-x: hidden;
+}
+.app-phone h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+.app-phone button,
+.app-phone a[role="button"],
+.app-phone .btn {
+  min-height: var(--touch-min, 44px);
+  min-width: var(--touch-min, 44px);
+}
+.app-phone input,
+.app-phone select,
+.app-phone textarea {
+  min-height: var(--touch-min, 44px);
+  font-size: 16px; /* avoids zoom on focus on iOS */
+}
+/* Phone frame: iPhone 17 size (402×874 logical px, 6.3" portrait) */
+.app-phone {
+  width: 402px;
+  height: 874px;
+  max-height: min(874px, 90vh);
+  background: #EBEDF2;
+  border-radius: 44px;
+  box-shadow:
+    0 0 0 12px #0d0d0d,
+    0 0 0 14px #2a2a2a,
+    0 24px 48px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.app-phone-inner {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+/* Auth screens (Login/Register): same horizontal padding as main */
+.app-phone .auth-page {
+  padding: 24px 20px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.app-phone .auth-page .auth-back {
+  margin-bottom: 8px;
+}
+a { color: #0062B8; text-decoration: none; }
+a:hover { text-decoration: underline; }
