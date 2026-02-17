@@ -88,11 +88,26 @@ Install the following and ensure they are available in your system PATH:
      ```
 
 4. **Configure environment variables**
-   - In the project root, create `backend/.env` (no quotes around the value):
+   Create both files below (copy each block and save to the path shown). Replace `postgres`, `password`, and `byuconnect` with your PostgreSQL username, password, and database name.
+
+   **Backend — save as `backend/.env`:**
      ```env
-     DATABASE_URL=postgresql://USER:PASSWORD@localhost:5432/byuconnect
+     # PostgreSQL connection string (required for DB APIs).
+     # Format: postgresql://USER:PASSWORD@HOST:PORT/DATABASE
+     DATABASE_URL=postgresql://postgres:password@localhost:5432/byuconnect
+
+     # Optional. Port for the API server (default: 5000).
+     PORT=5000
      ```
-   - Replace `USER`, `PASSWORD`, and `byuconnect` with your PostgreSQL username, password, and database name.
+
+   **Project root — save as `.env` (optional; for frontend API URL / MapTiler):**
+     ```env
+     # Optional. Backend API base URL (default: http://localhost:5000).
+     # VITE_API_URL=http://localhost:5000
+
+     # Optional. MapTiler API key for map styles (leave unset to use free demo tiles).
+     # VITE_MAPTILER_KEY=your_maptiler_key
+     ```
 
 5. **Create tables and load sample data**
    - From the project root, run the SQL scripts in order (use your database name and user if different):
